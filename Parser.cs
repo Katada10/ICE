@@ -45,36 +45,6 @@ public class Parser
 
     }
 
-    private string Paran(string s)
-    {
-        int c = 0;
-        var toRet = "";
-        for (int i = 0; i < s.Length; i++)
-        {
-            if (s[i] == '(')
-            {
-                c = i + 1;
-                continue;
-            }
-
-            if (s[i] == ')')
-            {
-                var stmnt = s.Substring(c, i - c);
-                var segment = s.Substring(c - 1, i + 1 - (c - 1));
-
-                var e = Order(stmnt);
-
-                s = s.Replace(segment, Convert.ToString(e));
-
-                toRet = s;
-                if (!s.Contains("("))
-                    break;
-            }
-        }
-
-        return toRet;
-    }
-
     private string FindNextOperator(string s, int start)
     {
         int o = 0;
@@ -172,7 +142,7 @@ public class Parser
 
     public string OrderN(string s)
     {
-        if (s.Contains("x"))
+        while (s.Contains("x"))
         {
             var str = FindPrevOperator(s, s.IndexOf('x')) + "x" + FindNextOperator(s, s.IndexOf('x'));
             
@@ -186,7 +156,7 @@ public class Parser
 
         if (!s.Contains("x"))
         {
-            if (s.Contains('/'))
+            while (s.Contains('/'))
             {
                 var str = FindPrevOperator(s, s.IndexOf('/')) + "/" + FindNextOperator(s, s.IndexOf('/'));
                 var e = evaluate(str);
@@ -197,20 +167,20 @@ public class Parser
             }
             if (!s.Contains("/"))
             {
-                if (s.Contains('-'))
+                while (s.Contains('+'))
                 {
-                    var str = FindPrevOperator(s, s.IndexOf('-')) + "-" + FindNextOperator(s, s.IndexOf('-'));
+                    var str = FindPrevOperator(s, s.IndexOf('+')) + "+" + FindNextOperator(s, s.IndexOf('+'));
                     var e = evaluate(str);
 
                     var expr = " " + e.ToString() + " ";
 
                     s = s.Replace(str, expr);
                 }
-                if (!s.Contains("-"))
+                if (!s.Contains("+"))
                 {
-                    while (s.Contains('+'))
+                    while (s.Contains('-'))
                     {
-                        var str = FindPrevOperator(s, s.IndexOf('+')) + "+" + FindNextOperator(s, s.IndexOf('+'));
+                        var str = FindPrevOperator(s, s.IndexOf('-')) + "-" + FindNextOperator(s, s.IndexOf('-'));
                         var e = evaluate(str);
 
                         var expr = " " + e.ToString() + " ";
@@ -225,8 +195,7 @@ public class Parser
 
     public string Order(string s)
     {
-        
-        if (s.Contains('('))
+        while (s.Contains('('))
         {
             var r = OrderN(P(s));
 
@@ -235,10 +204,10 @@ public class Parser
         }
         if (!s.Contains('('))
         {
-            if (s.Contains("x"))
+            while (s.Contains("x"))
             {
                 var str = FindPrevOperator(s, s.IndexOf('x')) + "x" + FindNextOperator(s, s.IndexOf('x'));
-                var e = evaluate(str);
+                var e = OrderN(str);
 
                 var expr = " " + e.ToString() + " ";
 
@@ -247,10 +216,10 @@ public class Parser
 
             if (!s.Contains("x"))
             {
-                if (s.Contains('/'))
+                while (s.Contains('/'))
                 {
                     var str = FindPrevOperator(s, s.IndexOf('/')) + "/" + FindNextOperator(s, s.IndexOf('/'));
-                    var e = evaluate(str);
+                    var e = OrderN(str);
 
                     var expr = " " + e.ToString() + " ";
 
@@ -258,21 +227,21 @@ public class Parser
                 }
                 if (!s.Contains("/"))
                 {
-                    if (s.Contains('-'))
+                    while(s.Contains('+'))
                     {
-                        var str = FindPrevOperator(s, s.IndexOf('-')) + "-" + FindNextOperator(s, s.IndexOf('-'));
-                        var e = evaluate(str);
+                        var str = FindPrevOperator(s, s.IndexOf('+')) + "+" + FindNextOperator(s, s.IndexOf('+'));
+                        var e = OrderN(str);
 
                         var expr = " " + e.ToString() + " ";
 
                         s = s.Replace(str, expr);
                     }
-                    if (!s.Contains("-"))
+                    if (!s.Contains("+"))
                     {
-                        if (s.Contains('+'))
+                        while (s.Contains('-'))
                         {
-                            var str = FindPrevOperator(s, s.IndexOf('+')) + "+" + FindNextOperator(s, s.IndexOf('+'));
-                            var e = evaluate(str);
+                            var str = FindPrevOperator(s, s.IndexOf('-')) + "-" + FindNextOperator(s, s.IndexOf('-'));
+                            var e = OrderN(str);
 
                             var expr = " " + e.ToString() + " ";
 
@@ -285,7 +254,6 @@ public class Parser
         return s;
         
     }
-
 
     private void StoreVariable(string line)
     {
@@ -320,6 +288,10 @@ public class Parser
     public void Parse(string s)
     {
         //TODO: Fix Brackets with variables
+
+        if (s.Contains("#"))
+            return;
+
         //If Math Is Detected
         if ((s.Contains('+') || s.Contains('-') || s.Contains('/') || s.Contains('x')) && !s.Contains('=') && !HasVar(s))
         {
@@ -376,16 +348,5 @@ public class Parser
             }
         }
     }
-
-    public Dictionary<string, string> getVars()
-    {
-        return variables;
-    }
-
-    public void setVars(Dictionary<string, string> n)
-    {
-        variables = n;
-    }
-
-
+    
 }

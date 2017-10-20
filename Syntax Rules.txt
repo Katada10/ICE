@@ -1,0 +1,32 @@
+﻿@Author Katada Freije
+@Email katadafreije@gmail.com
+@Copyright Katada 2017
+
+Welcome To ICE!
+
+ICE is a lightweight, dynamic, interpreted language written in C# and runs for windows 
+platform.
+
+ICE is space sensitive
+
+e.g 
+20 x (10 + var) will not work, has to be
+20 x (10 + var )
+
+ICE Syntax:
+
+Assign Variables:
+	var [variable name] = [value]
+
+Change Variable Values:
+	chv [variable name] = [new value]
+
+Math:
+	+: Add
+	-: Substract
+	x: Multiply
+	/: Divide
+	(): Parantheses
+
+	e.g
+	(20 + 5) x var1 / 20 - 5 is a valid statement
