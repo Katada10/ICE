@@ -14,10 +14,10 @@ public class Parser
     {
         variables = new Dictionary<string, string>();
     }
-    
+
     public double evaluate(string s)
     {
-        var opn = new char[]{'+', '-', '/', 'x'};
+        var opn = new char[] { '+', '-', '/', 'x' };
 
         var nums = s.Split(opn);
 
@@ -26,51 +26,51 @@ public class Parser
             return (Convert.ToDouble(nums[0]) - Convert.ToDouble(nums[1]));
         }
 
-        else if(s.Contains("+"))
+        else if (s.Contains("+"))
         {
             return (Convert.ToDouble(nums[0]) + Convert.ToDouble(nums[1]));
         }
 
-        else if(s.Contains("/"))
+        else if (s.Contains("/"))
         {
             return (Convert.ToDouble(nums[0]) / Convert.ToDouble(nums[1]));
         }
 
-        else if(s.Contains("x"))
+        else if (s.Contains("x"))
         {
             return (Convert.ToDouble(nums[0]) * Convert.ToDouble(nums[1]));
         }
         else
             return Convert.ToDouble(s);
-            
-    } 
+
+    }
 
     private string Paran(string s)
     {
         int c = 0;
         var toRet = "";
-            for(int i = 0; i < s.Length; i++)
+        for (int i = 0; i < s.Length; i++)
+        {
+            if (s[i] == '(')
             {
-                if(s[i] == '(')
-                {
-                    c = i + 1;
-                    continue;
-                }
+                c = i + 1;
+                continue;
+            }
 
-                if(s[i] == ')')
-                {
-                    var stmnt = s.Substring(c, i - c);
-                    var segment = s.Substring(c - 1, i + 1 - (c - 1));
+            if (s[i] == ')')
+            {
+                var stmnt = s.Substring(c, i - c);
+                var segment = s.Substring(c - 1, i + 1 - (c - 1));
 
-                    var e = evaluate(stmnt);
+                var e = Order(stmnt);
 
-                    s = s.Replace(segment, Convert.ToString(e));
+                s = s.Replace(segment, Convert.ToString(e));
 
                 toRet = s;
-                    if (!s.Contains("("))
-                        break;
-                }
+                if (!s.Contains("("))
+                    break;
             }
+        }
 
         return toRet;
     }
@@ -82,17 +82,17 @@ public class Parser
         string toRet = null;
 
 
-        for(int i = start + 1; i < s.Length; i++)
+        for (int i = start + 1; i < s.Length; i++)
         {
-            if(s[i] == '+' || s[i] == '-' || s[i] == 'x' || s[i] == '/')
+            if (s[i] == '+' || s[i] == '-' || s[i] == 'x' || s[i] == '/')
             {
                 o = i;
                 toRet = s.Substring(start + 1, o - (start + 1));
                 break;
             }
-            if(i == s.Length - 1)
+            if (i == s.Length - 1)
             {
-                return(s.Substring(start + 1, s.Length - (start + 1)));
+                return (s.Substring(start + 1, s.Length - (start + 1)));
             }
         }
 
@@ -101,19 +101,20 @@ public class Parser
 
     private string FindPrevOperator(string s, int start)
     {
-        
+
         int o = 0;
 
         var toRet = "";
-        for(int i = start - 1; i > 0; i--)
+        for (int i = start - 1; i > 0; i--)
         {
-            if(s[i] == '+' || s[i] == '-' || s[i] == 'x' || s[i] == '/')
+            if (s[i] == '+' || s[i] == '-' || s[i] == 'x' || s[i] == '/')
             {
                 o = i;
                 toRet = s.Substring(o + 1, start - (o + 1));
                 break;
             }
-            if(i == 1){
+            if (i == 1)
+            {
                 toRet = s.Substring(0, start);
             }
         }
@@ -126,19 +127,19 @@ public class Parser
         int s = 0, e = 0;
         for (int i = 0; i < l.Length; i++)
         {
-            if( (l[i] == 'v' && l[i+1] == 'a' && l[i+2] =='r') || (l[i] == 'c' && l[i + 1] == 'h' && l[i + 2] == 'v') )
+            if ((l[i] == 'v' && l[i + 1] == 'a' && l[i + 2] == 'r') || (l[i] == 'c' && l[i + 1] == 'h' && l[i + 2] == 'v'))
             {
                 s = i + 2;
                 continue;
             }
 
-            if(l[i] == '=')
+            if (l[i] == '=')
             {
                 e = i;
                 break;
             }
         }
-       
+
         var sub = l.Substring(s + 1, (e - 1) - s);
         sub = sub.Replace(" ", string.Empty);
 
@@ -150,7 +151,7 @@ public class Parser
         int s = 0;
         for (int i = 0; i < line.Length; i++)
         {
-            if(line[i] == '=')
+            if (line[i] == '=')
             {
                 s = i;
                 break;
@@ -160,21 +161,93 @@ public class Parser
         return line.Substring(s + 1, (line.Length - 1) - s);
     }
 
+    private string P(string s)
+    {
+        int i = s.IndexOf('(');
+        int j = s.IndexOf(')');
+
+        var str = s.Substring(i + 1, j - (i + 1));
+        return str;
+    }
+
+    public string OrderN(string s)
+    {
+        if (s.Contains("x"))
+        {
+            var str = FindPrevOperator(s, s.IndexOf('x')) + "x" + FindNextOperator(s, s.IndexOf('x'));
+            
+            var e = evaluate(str);
+
+            var expr = " " + e.ToString() + " ";
+
+            s = s.Replace(str, expr);
+           
+        }
+
+        if (!s.Contains("x"))
+        {
+            if (s.Contains('/'))
+            {
+                var str = FindPrevOperator(s, s.IndexOf('/')) + "/" + FindNextOperator(s, s.IndexOf('/'));
+                var e = evaluate(str);
+
+                var expr = " " + e.ToString() + " ";
+
+                s = s.Replace(str, expr);
+            }
+            if (!s.Contains("/"))
+            {
+                if (s.Contains('-'))
+                {
+                    var str = FindPrevOperator(s, s.IndexOf('-')) + "-" + FindNextOperator(s, s.IndexOf('-'));
+                    var e = evaluate(str);
+
+                    var expr = " " + e.ToString() + " ";
+
+                    s = s.Replace(str, expr);
+                }
+                if (!s.Contains("-"))
+                {
+                    while (s.Contains('+'))
+                    {
+                        var str = FindPrevOperator(s, s.IndexOf('+')) + "+" + FindNextOperator(s, s.IndexOf('+'));
+                        var e = evaluate(str);
+
+                        var expr = " " + e.ToString() + " ";
+
+                        s = s.Replace(str, expr);
+                    }
+                }
+            }
+        }
+        return s;
+    }
+
     public string Order(string s)
     {
-            if(s.Contains("x"))
+        
+        if (s.Contains('('))
+        {
+            var r = OrderN(P(s));
+
+            s = s.Replace(s.Substring(s.IndexOf('('), s.IndexOf(')') - s.IndexOf('(')), r).
+                Replace("(", string.Empty).Replace(")", string.Empty);
+        }
+        if (!s.Contains('('))
+        {
+            if (s.Contains("x"))
             {
                 var str = FindPrevOperator(s, s.IndexOf('x')) + "x" + FindNextOperator(s, s.IndexOf('x'));
                 var e = evaluate(str);
 
                 var expr = " " + e.ToString() + " ";
-                
+
                 s = s.Replace(str, expr);
             }
 
-            if(!s.Contains("x"))
+            if (!s.Contains("x"))
             {
-                if(s.Contains('/'))
+                if (s.Contains('/'))
                 {
                     var str = FindPrevOperator(s, s.IndexOf('/')) + "/" + FindNextOperator(s, s.IndexOf('/'));
                     var e = evaluate(str);
@@ -182,10 +255,10 @@ public class Parser
                     var expr = " " + e.ToString() + " ";
 
                     s = s.Replace(str, expr);
-            }
-                if(!s.Contains("/"))
+                }
+                if (!s.Contains("/"))
                 {
-                    if(s.Contains('-'))
+                    if (s.Contains('-'))
                     {
                         var str = FindPrevOperator(s, s.IndexOf('-')) + "-" + FindNextOperator(s, s.IndexOf('-'));
                         var e = evaluate(str);
@@ -193,30 +266,33 @@ public class Parser
                         var expr = " " + e.ToString() + " ";
 
                         s = s.Replace(str, expr);
-                }
-                    if(!s.Contains("-"))
+                    }
+                    if (!s.Contains("-"))
                     {
-                        if(s.Contains('+'))
+                        if (s.Contains('+'))
                         {
                             var str = FindPrevOperator(s, s.IndexOf('+')) + "+" + FindNextOperator(s, s.IndexOf('+'));
                             var e = evaluate(str);
 
                             var expr = " " + e.ToString() + " ";
-                        
+
                             s = s.Replace(str, expr);
                         }
                     }
                 }
+            }
         }
         return s;
+        
     }
+
 
     private void StoreVariable(string line)
     {
         var name = getVarName(line);
         var value = getVarValue(line);
-        
-        if(!variables.Keys.Contains(name))
+
+        if (!variables.Keys.Contains(name))
         {
             variables.Add(name, value);
         }
@@ -240,24 +316,15 @@ public class Parser
     {
         return variables.Keys.Any(t => s.Contains(t));
     }
+
     public void Parse(string s)
-    {   
+    {
         //TODO: Fix Brackets with variables
         //If Math Is Detected
         if ((s.Contains('+') || s.Contains('-') || s.Contains('/') || s.Contains('x')) && !s.Contains('=') && !HasVar(s))
         {
-            if(s.Contains('('))
-            {
-                var p = Paran(s);
-                
-                var r = Order(p);
-                Console.WriteLine(r);
-            }
-            else
-            {
-                var res = Order(s);
-                Console.WriteLine(res);
-            }
+            var res = Order(s);
+            Console.WriteLine(res);
         }
 
         //Variable Assignment
@@ -265,55 +332,44 @@ public class Parser
         {
             StoreVariable(s);
         }
-        
+
 
         //operation with variable or new assignment
-        else if ( s.Contains('+') || s.Contains('-') || s.Contains('/') || s.Contains('x') || s.Contains('=') && HasVar(s))
+        else if (s.Contains('+') || s.Contains('-') || s.Contains('/') || s.Contains('x') || s.Contains('=') && HasVar(s))
         {
             foreach (var item in variables.Keys.ToList())
             {
                 //Variable Operation
-                
+
                 if (!s.Contains('=') && HasVar(s))
                 {
-                     var words = s.Split(' ');
-                     var vars = new List<string>();
+                    var words = s.Split(' ');
+                    var vars = new List<string>();
 
-                     foreach (var w in words)
-                     {
-                         if(HasVar(w) && !isOp(w))
-                         {
+                    foreach (var w in words)
+                    {
+                        if (HasVar(w) && !isOp(w))
+                        {
                             var n = "";
-                             
+
                             if (w.Contains('('))
                             {
-                                 n = w.Replace("(", string.Empty);
+                                n = w.Replace("(", string.Empty);
                                 s = s.Replace(n, variables[n]);
                             }
                             else
                             {
                                 s = s.Replace(w, variables[w]);
                             }
-                         }
-                         
-                     }
-                     
-                     if (s.Contains('('))
-                     {
-                        var p = Paran(s);
-                        var res = Order(p);
-                        Console.WriteLine(res);
-                         break;
-                     }
-                     else
-                     {
-                         Console.WriteLine(Order(s));
-                         break;
-                     }
-                }
+                        }
 
+                    }
+
+                    Console.WriteLine(Order(s));
+                    break;
+                }
                 //New assignment
-                else if(s.Contains("chv"))
+                else if (s.Contains("chv"))
                 {
                     StoreVariable(s);
                 }
@@ -331,5 +387,5 @@ public class Parser
         variables = n;
     }
 
-    
+
 }
