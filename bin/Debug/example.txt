@@ -1,3 +1,5 @@
-var num = 7
+var num = 9
 
-num + (10 x 5) - 8
+ num = 7
+
+num + 10

@@ -11,6 +11,7 @@ public class Parser
 
     private Dictionary<string, string> variables;
 
+
     public Parser()
     {
         variables = new Dictionary<string, string>();
@@ -220,38 +221,70 @@ public class Parser
     {
         var name = getVarName(line);
         var value = getVarValue(line);
-
-        variables.Add(name, value);
+        
+        if(!variables.Keys.Contains(name))
+        {
+            variables.Add(name, value);
+        }
+        else
+        {
+            variables[name] = value;
+        }
     }
 
-    public void Parse(string s) 
+    public void Parse(string s)
     {
+
         //If Math Is Detected
-        if((s.Contains('+') || s.Contains('-') || s.Contains('/') || s.Contains('*')) && s.IsNumeric())
+        if ((s.Contains('+') || s.Contains('-') || s.Contains('/') || s.Contains('*')) && s.IsNumeric())
         {
             var p = Paran(s);
             var res = Order(p);
             Console.WriteLine(res);
         }
-        else if(s.Contains("var"))
+        else if (s.Contains("var"))
         {
             StoreVariable(s);
         }
-        else if((s.Contains('+') || s.Contains('-') || s.Contains('/') || s.Contains('*')) && !s.IsNumeric())
+        else if ( (s.Contains('+') || s.Contains('-') || s.Contains('/') || s.Contains('*') || s.Contains('=')) && !s.IsNumeric())
         {
-            foreach (var item in variables.Keys)
+            foreach (var item in variables.Keys.ToList())
             {
-                if(s.Contains(item))
+                if (s.Contains(item) && !s.Contains('='))
                 {
                     string val = variables[item];
 
                     s = s.Replace(item, val);
-                    var p = Paran(s);
-                    var res = Order(p);
+
+                    var res = ""; 
+                    if(s.Contains('('))
+                    {
+                         var p = Paran(s);
+                        res = Order(p); 
+                    }
+                    else
+                    {
+                        res = Order(s);
+                    }
 
                     Console.WriteLine(res);
                 }
+                else if(s.Contains(item) && s.Contains('='))
+                {
+                    StoreVariable(s);
+                }
             }
         }
-    } 
+    }
+
+
+    public Dictionary<string, string> getVars()
+    {
+        return variables;
+    }
+
+    public void setVars(Dictionary<string, string> n)
+    {
+        variables = n;
+    }
 }
