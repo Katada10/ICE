@@ -231,6 +231,7 @@ public class Parser
         {
             var p = Paran(s);
             var res = Order(p);
+            Console.WriteLine(res);
         }
         else if(s.Contains("var"))
         {
