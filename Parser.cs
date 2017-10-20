@@ -242,10 +242,10 @@ public class Parser
     }
     public void Parse(string s)
     {   
+        //TODO: Fix Brackets with variables
         //If Math Is Detected
         if ((s.Contains('+') || s.Contains('-') || s.Contains('/') || s.Contains('x')) && !s.Contains('=') && !HasVar(s))
         {
-            Console.WriteLine("MATH:");
             if(s.Contains('('))
             {
                 var p = Paran(s);
@@ -283,26 +283,26 @@ public class Parser
                      {
                          if(HasVar(w) && !isOp(w))
                          {
-                             vars.Add(w);
+                            var n = "";
+                             
+                            if (w.Contains('('))
+                            {
+                                 n = w.Replace("(", string.Empty);
+                                s = s.Replace(n, variables[n]);
+                            }
+                            else
+                            {
+                                s = s.Replace(w, variables[w]);
+                            }
                          }
-                     }
-
-                     var res = "";
-
-                     foreach (var v in vars)
-                     {
-                        // Console.WriteLine(v);
-                        if (s.Contains(v))
-                            s = s.Replace(v, variables[v]);
-                        else
-                            continue;
+                         
                      }
                      
                      if (s.Contains('('))
                      {
-                         var p = Paran(s);
-                         res = Order(p);
-                         Console.WriteLine(res);
+                        var p = Paran(s);
+                        var res = Order(p);
+                        Console.WriteLine(res);
                          break;
                      }
                      else
