@@ -1,5 +1,9 @@
-var num = 9
+var num = 5
 
- num = 7
+var old = 7
 
-num + 10
+old = 5
+
+var new = 10
+
+num + old / new

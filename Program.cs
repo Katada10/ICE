@@ -20,12 +20,7 @@ namespace ConsoleApplication
                 p.Parse(line);
             }
 
-
-            var list = p.getVars();
             Console.ReadLine();
-
-            list.Clear();
-            p.setVars(list);
         }
     }
 }

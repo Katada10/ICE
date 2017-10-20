@@ -8,15 +8,13 @@ using System.Diagnostics;
 
 public class Parser
 {
-
     private Dictionary<string, string> variables;
-
 
     public Parser()
     {
         variables = new Dictionary<string, string>();
     }
-
+    
     public double evaluate(string s)
     {
         var opn = new char[]{'+', '-', '/', 'x'};
@@ -24,17 +22,24 @@ public class Parser
         var nums = s.Split(opn);
 
         if (s.Contains("-"))
+        {
             return (Convert.ToDouble(nums[0]) - Convert.ToDouble(nums[1]));
+        }
 
         else if(s.Contains("+"))
+        {
             return (Convert.ToDouble(nums[0]) + Convert.ToDouble(nums[1]));
+        }
 
         else if(s.Contains("/"))
+        {
             return (Convert.ToDouble(nums[0]) / Convert.ToDouble(nums[1]));
+        }
 
         else if(s.Contains("x"))
+        {
             return (Convert.ToDouble(nums[0]) * Convert.ToDouble(nums[1]));
-
+        }
         else   
             return Convert.ToDouble(s);
             
@@ -121,7 +126,7 @@ public class Parser
         int s = 0, e = 0;
         for (int i = 0; i < l.Length; i++)
         {
-            if(l[i] == 'v' && l[i+1] == 'a' && l[i+2] =='r')
+            if( (l[i] == 'v' && l[i+1] == 'a' && l[i+2] =='r') || (l[i] == 'c' && l[i + 1] == 'h' && l[i + 2] == 'v') )
             {
                 s = i + 2;
                 continue;
@@ -155,11 +160,8 @@ public class Parser
         return line.Substring(s + 1, (line.Length - 1) - s);
     }
 
-    private string Order(string s)
+    public string Order(string s)
     {
-
-        var toRet = "";
-
         for (int i = 0; i < s.Length; i++)
         {
             if(s[i] == 'x' )
@@ -204,8 +206,6 @@ public class Parser
                             var expr = " " + e.ToString() + " ";
                         
                             s = s.Replace(str, expr);
-
-                            toRet = s;
                         }
                         else{
                             continue;
@@ -214,7 +214,7 @@ public class Parser
                 }
             }
         }
-        return toRet;
+        return s;
     }
 
     private void StoreVariable(string line)
@@ -232,51 +232,91 @@ public class Parser
         }
     }
 
-    public void Parse(string s)
+    private bool isOp(string s)
     {
-
-        //If Math Is Detected
-        if ((s.Contains('+') || s.Contains('-') || s.Contains('/') || s.Contains('*')) && s.IsNumeric())
+        if (s == "+" || s == "-" || s == "/" || s == "x")
         {
-            var p = Paran(s);
-            var res = Order(p);
-            Console.WriteLine(res);
+            return true;
         }
+
+        else { return false; }
+    }
+
+    public void Parse(string s)
+    {   
+        //If Math Is Detected
+        if ((s.Contains('+') || s.Contains('-') || s.Contains('/') || s.Contains('*')) && !s.Contains('=') && s.IsNumeric())
+        {
+            if(s.Contains('('))
+            {
+                var p = Paran(s);
+                
+                var r = Order(p);
+                Console.WriteLine(r);
+            }
+            else
+            {
+                var res = Order(s);
+                Console.WriteLine(res);
+            }
+        }
+
+        //Variable Assignment
         else if (s.Contains("var"))
         {
             StoreVariable(s);
         }
-        else if ( (s.Contains('+') || s.Contains('-') || s.Contains('/') || s.Contains('*') || s.Contains('=')) && !s.IsNumeric())
+        
+
+        //operation with variable or new assignment
+        else if ( (s.Contains('+') || s.Contains('-') || s.Contains('/') || s.Contains('*') || s.Contains('=')))
         {
             foreach (var item in variables.Keys.ToList())
             {
-                if (s.Contains(item) && !s.Contains('='))
+                //Variable Operation
+                if (!s.Contains('='))
                 {
-                    string val = variables[item];
+                     var words = s.Split(' ');
+                     var vars = new List<string>();
 
-                    s = s.Replace(item, val);
+                     foreach (var w in words)
+                     {
+                         if(!w.IsNumeric() && !isOp(w))
+                         {
+                             vars.Add(w);
+                         }
+                     }
 
-                    var res = ""; 
-                    if(s.Contains('('))
-                    {
+                     var res = "";
+
+                     foreach (var v in vars)
+                     {
+                       // Console.WriteLine(v);
+                         s = s.Replace(v, variables[v]);
+                     }
+                     
+                     if (s.Contains('('))
+                     {
                          var p = Paran(s);
-                        res = Order(p); 
-                    }
-                    else
-                    {
-                        res = Order(s);
-                    }
-
-                    Console.WriteLine(res);
+                         res = Order(p);
+                         Console.WriteLine(res);
+                         break;
+                     }
+                     else
+                     {
+                         Console.WriteLine(Order(s));
+                         break;
+                     }
                 }
-                else if(s.Contains(item) && s.Contains('='))
+
+                //New assignment
+                else if(s.Contains("chv"))
                 {
                     StoreVariable(s);
                 }
             }
         }
     }
-
 
     public Dictionary<string, string> getVars()
     {
@@ -287,4 +327,6 @@ public class Parser
     {
         variables = n;
     }
+
+    
 }
