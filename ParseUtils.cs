@@ -138,6 +138,27 @@ public static class ParseUtils
         return line.Substring(s + 1, (line.Length - 1) - s);
     }
 
+    public static List<string> FindVar(string s, Dictionary<string, string> variables)
+    {
+        var words = s.Split(' ');
+        var str = new List<string>();
+
+        foreach(var item in variables.Keys)
+        {
+            foreach(var word in words)
+            {
+                if (word == item)
+                {
+                    if (!str.Contains(word))
+                        str.Add(word);
+                    else
+                        continue;
+                }
+            }
+        }
+        return str;
+    }
+
     public static string GetIfCondition(string s)
     {
         bool foundFirst = false;
@@ -159,6 +180,58 @@ public static class ParseUtils
         }
         
         return s.Substring(x + 1, (y -x) - 1);
+    }
+
+    public static string EvaluateIf(string c)
+    {
+        if(c.Contains('='))
+        {
+            var words = c.Split('=');
+
+            //TODO: Remove Whitespaces
+            var replaced = words.Select(x => x.Replace(" ", string.Empty)).ToList();
+
+            if (replaced[0] == replaced[1])
+            {
+                return "TRUE";
+            }
+            else 
+            {
+                return "FALSE";
+            }
+        }
+        else if (c.Contains('<'))
+        {
+            var words = c.Split('<');
+
+            var replaced = words.Select(x => x.Replace(" ", string.Empty)).ToList();
+
+            if (Convert.ToDouble(replaced[0]) < Convert.ToDouble(replaced[1]))
+            {
+                return "TRUE";
+            }
+            else
+            {
+                return "FALSE";
+            }
+        }
+        else if (c.Contains('>'))
+        {
+            var words = c.Split('>');
+
+            var replaced = words.Select(x => x.Replace(" ", string.Empty)).ToList();
+
+            if (Convert.ToDouble(replaced[0]) > Convert.ToDouble(replaced[1]))
+            {
+                return "TRUE";
+            }
+            else
+            {
+                return "FALSE";
+            }
+        }
+
+        return "NULL";
     }
 }
 

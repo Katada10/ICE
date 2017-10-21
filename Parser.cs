@@ -158,10 +158,11 @@ public class Parser
         return variables.Keys.Any(t => s.Contains(t));
     }
 
+
     public string Parse(string s)
     {
         //TODO: Fix Brackets with variables
-
+        
         if (s.Contains("#") || s == string.Empty)
             return "";
 
@@ -214,16 +215,7 @@ public class Parser
                     return "";
                 }
             }
-        }else
-        {
-            if (HasVar(s))
-            {
-                return variables[s];
-            }
-            else if(s.IsNumeric())
-                return s;
         }
-
         #endregion
 
         #region logic
@@ -233,10 +225,35 @@ public class Parser
             #region getCondition
                 var condition = ParseUtils.GetIfCondition(s);
             #endregion
+            
+            #region evaluate
 
+            if(HasVar(condition))
+            {
+                var vars = ParseUtils.FindVar(condition, variables);
+
+                foreach(var v in vars)
+                {
+                    condition = condition.Replace(v, variables[v]);
+                }
+            }
+            
+            return ParseUtils.EvaluateIf(condition);
+
+            #endregion
         }
 
         #endregion
+
+        else
+        {
+            if (HasVar(s) && !s.Contains("if"))
+            {
+                return variables[s];
+            }
+            else if (s.IsNumeric())
+                return s;
+        }
         return "Parse Failed";
     }
 
