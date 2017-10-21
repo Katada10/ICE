@@ -1,6 +1,5 @@
-C:\Users\Katada\Documents\Source\Repos\ICE\ICE\bin\Debug\ICE.exe.config
-C:\Users\Katada\Documents\Source\Repos\ICE\ICE\bin\Debug\ICE.exe
+C:\Users\Katada\Documents\Source\Repos\ICE\ICE\bin\Debug\ICE.dll.config
+C:\Users\Katada\Documents\Source\Repos\ICE\ICE\bin\Debug\ICE.dll
 C:\Users\Katada\Documents\Source\Repos\ICE\ICE\bin\Debug\ICE.pdb
-C:\Users\Katada\Documents\Source\Repos\ICE\ICE\obj\Debug\ICE.exe
+C:\Users\Katada\Documents\Source\Repos\ICE\ICE\obj\Debug\ICE.dll
 C:\Users\Katada\Documents\Source\Repos\ICE\ICE\obj\Debug\ICE.pdb
-C:\Users\Katada\Documents\Source\Repos\ICE\ICE\obj\Debug\ICE.csprojResolveAssemblyReference.cache

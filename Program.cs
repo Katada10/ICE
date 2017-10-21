@@ -14,7 +14,7 @@ namespace ConsoleApplication
             var lines = File.ReadAllLines("example.txt");
             var lst = lines.OfType<string>().ToList();
 
-           
+
             foreach (var line in lst)
             {
                 p.Parse(line);
