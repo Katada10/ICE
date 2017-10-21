@@ -137,5 +137,28 @@ public static class ParseUtils
 
         return line.Substring(s + 1, (line.Length - 1) - s);
     }
+
+    public static string GetIfCondition(string s)
+    {
+        bool foundFirst = false;
+        int x = 0, y = 0;
+        for (int i = 0; i < s.Length; i++)
+        {
+            if(s[i] == ';' && !foundFirst)
+            {
+                x = i;
+                foundFirst = true;
+                continue;
+            }
+            else if(s[i] == ';' && foundFirst)
+            {
+                foundFirst = false;
+                y = i;
+                break;
+            }
+        }
+        
+        return s.Substring(x + 1, (y -x) - 1);
+    }
 }
 

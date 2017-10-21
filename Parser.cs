@@ -8,13 +8,13 @@ using System.Diagnostics;
 
 public class Parser
 {
-    private Dictionary<string, string> variables;
+    public Dictionary<string, string> variables;
 
     public Parser()
     {
         variables = new Dictionary<string, string>();
     }
-    
+
     public string P(string s)
     {
         int i = s.IndexOf('(');
@@ -29,13 +29,13 @@ public class Parser
         while (s.Contains("x"))
         {
             var str = ParseUtils.FindPrevOperator(s, s.IndexOf('x')) + "x" + ParseUtils.FindNextOperator(s, s.IndexOf('x'));
-            
+
             var e = ParseUtils.evaluate(str);
 
             var expr = " " + e.ToString() + " ";
 
             s = s.Replace(str, expr);
-           
+
         }
 
         if (!s.Contains("x"))
@@ -82,7 +82,7 @@ public class Parser
         if (s.Contains('('))
         {
             var r = OrderN(P(s).Replace("(", string.Empty).Replace(")", string.Empty));
-            
+
             s = s.Replace(P(s), r);
         }
         if (!s.Contains('('))
@@ -110,7 +110,7 @@ public class Parser
                 }
                 if (!s.Contains("/"))
                 {
-                    while(s.Contains('+'))
+                    while (s.Contains('+'))
                     {
                         var str = ParseUtils.FindPrevOperator(s, s.IndexOf('+')) + "+" + ParseUtils.FindNextOperator(s, s.IndexOf('+'));
                         var e = OrderN(str);
@@ -135,9 +135,9 @@ public class Parser
             }
         }
         return s;
-        
+
     }
-    
+
     private void StoreVariable(string line)
     {
         var name = ParseUtils.getVarName(line);
@@ -152,12 +152,12 @@ public class Parser
             variables[name] = value;
         }
     }
-    
+
     private bool HasVar(string s)
     {
         return variables.Keys.Any(t => s.Contains(t));
     }
-    
+
     public string Parse(string s)
     {
         //TODO: Fix Brackets with variables
@@ -165,23 +165,17 @@ public class Parser
         if (s.Contains("#") || s == string.Empty)
             return "";
 
+        #region parsemath
         //If Math Is Detected
         if ((s.Contains('+') || s.Contains('-') || s.Contains('/') || s.Contains('x')) && !s.Contains('=') && !HasVar(s))
         {
             var res = Order(s);
             return res;
-        }
-
-        //Variable Assignment
-        else if (s.Contains("var"))
+        }else if (s.Contains("var"))
         {
             StoreVariable(s);
             return "";
-        }
-
-
-        //operation with variable or new assignment
-        else if (s.Contains('+') || s.Contains('-') || s.Contains('/') || s.Contains('x') || s.Contains('=') && HasVar(s))
+        }else if (s.Contains('+') || s.Contains('-') || s.Contains('/') || s.Contains('x') || s.Contains('=') && HasVar(s))
         {
             foreach (var item in variables.Keys.ToList())
             {
@@ -190,7 +184,6 @@ public class Parser
                 if (!s.Contains('=') && HasVar(s))
                 {
                     var words = s.Split(' ');
-                    var vars = new List<string>();
 
                     foreach (var w in words)
                     {
@@ -221,8 +214,30 @@ public class Parser
                     return "";
                 }
             }
+        }else
+        {
+            if (HasVar(s))
+            {
+                return variables[s];
+            }
+            else if(s.IsNumeric())
+                return s;
         }
+
+        #endregion
+
+        #region logic
+
+        if(s.Contains("if"))
+        {
+            #region getCondition
+                var condition = ParseUtils.GetIfCondition(s);
+            #endregion
+
+        }
+
+        #endregion
         return "Parse Failed";
     }
-    
+
 }
