@@ -10,6 +10,8 @@ public class Parser
 {
     public Dictionary<string, string> variables;
 
+    private bool el = false;
+
     public Parser()
     {
         variables = new Dictionary<string, string>();
@@ -162,9 +164,11 @@ public class Parser
     public string Parse(string s)
     {
         //TODO: Fix Brackets with variables
-        
+
+        #region checkComment
         if (s.Contains("#") || s == string.Empty)
             return "";
+        #endregion
 
         #region parsemath
         //If Math Is Detected
@@ -221,6 +225,7 @@ public class Parser
 
         #region logic
 
+        #region containsIf
         if(s.Contains("if"))
         {
             #region getCondition
@@ -244,16 +249,32 @@ public class Parser
                 var toDo = ParseUtils.GetThen(s);
                 return Parse(toDo);
             }
-            else
+            else if(ParseUtils.EvaluateIf(condition) == "FALSE")
             {
+                el = true;
                 return "";
             }
 
             #endregion
         }
+        #endregion
+
+        #region containsElse
+
+        if (s.Contains("el") && el == true)
+        {
+            var toDO = s.Replace("el", string.Empty);
+            Console.WriteLine(toDO);
+            el = false;
+            toDO = "";
+            return Parse(toDO);
+        }
+        #endregion
+
 
         #endregion
 
+        #region printOnly
         else
         {
             if (HasVar(s) && !s.Contains("if"))
@@ -264,6 +285,8 @@ public class Parser
             else if (s.IsNumeric())
                 return s;
         }
+        #endregion
+
         return "Parse Failed";
     }
 
