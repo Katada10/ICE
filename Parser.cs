@@ -239,10 +239,16 @@ public class Parser
                 }
             }
 
-            var toDo = ParseUtils.GetThen(s);
+            if(ParseUtils.EvaluateIf(condition) == "TRUE")
+            {
+                var toDo = ParseUtils.GetThen(s);
+                return Parse(toDo);
+            }
+            else
+            {
+                return "";
+            }
 
-
-            return Parse(toDo);
             #endregion
         }
 
