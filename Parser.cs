@@ -176,7 +176,8 @@ public class Parser
         {
             StoreVariable(s);
             return "";
-        }else if (s.Contains('+') || s.Contains('-') || s.Contains('/') || s.Contains('x') || s.Contains('=') && HasVar(s))
+        }
+        else if (s.Contains('+') || s.Contains('-') || s.Contains('/') || s.Contains('x') || s.Contains('=') && HasVar(s))
         {
             foreach (var item in variables.Keys.ToList())
             {
@@ -237,9 +238,11 @@ public class Parser
                     condition = condition.Replace(v, variables[v]);
                 }
             }
-            
-            return ParseUtils.EvaluateIf(condition);
 
+            var toDo = ParseUtils.GetThen(s);
+
+
+            return Parse(toDo);
             #endregion
         }
 
@@ -249,7 +252,8 @@ public class Parser
         {
             if (HasVar(s) && !s.Contains("if"))
             {
-                return variables[s];
+                var t = s.Replace(" ", string.Empty);
+                return variables[t];
             }
             else if (s.IsNumeric())
                 return s;

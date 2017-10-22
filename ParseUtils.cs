@@ -182,6 +182,19 @@ public static class ParseUtils
         return s.Substring(x + 1, (y -x) - 1);
     }
 
+    public static string GetThen(string s)
+    {
+        for (int i = 0; i < s.Length; i++)
+        {
+            if(s[i] == '~')
+            {
+                return s.Substring(i + 1, (s.Length) - (i + 1));
+            }
+        }
+
+        return "";
+    }
+
     public static string EvaluateIf(string c)
     {
         if(c.Contains('='))
