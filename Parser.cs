@@ -264,13 +264,10 @@ public class Parser
         if (s.Contains("el") && el == true)
         {
             var toDO = s.Replace("el", string.Empty);
-            Console.WriteLine(toDO);
             el = false;
-            toDO = "";
             return Parse(toDO);
         }
         #endregion
-
 
         #endregion
 
