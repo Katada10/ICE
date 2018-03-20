@@ -10,7 +10,7 @@ platform.
 ICE is space sensitive
 
 e.g 
-20 x (10 + var) will not work, has to be
+20 * (10 + var) will not work, has to be
 20 x (10 + var )
 
 ICE Syntax:
